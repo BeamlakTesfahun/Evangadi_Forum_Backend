@@ -2,8 +2,8 @@ const dbconnection = require("../db/dbConfig");
 const { StatusCodes } = require("http-status-codes");
 
 async function getanswer(req, res) {
-  const question_id = req.params.question_id; 
-   try {
+  const question_id = req.params.question_id;
+  try {
     const [answers] = await dbconnection.query(
       "SELECT answer_id, user_name, content FROM answers WHERE question_id = ?",
       [question_id]
@@ -24,13 +24,12 @@ async function getanswer(req, res) {
   }
 }
 
-
 const postAnswer = async (req, res) => {
-  const { answer, question_id } = req.body;
+  const { content, question_id } = req.body;
 
   const username = req.user.username;
 
-  if (!answer) {
+  if (!content) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: "Bad request", message: "Please provide answer" });
@@ -38,7 +37,7 @@ const postAnswer = async (req, res) => {
   try {
     await dbconnection.query(
       "INSERT INTO answers (content, user_name, question_id) VALUES (?, ?, ?)",
-      [answer, username, question_id]
+      [content, username, question_id]
     );
 
     return res
@@ -135,5 +134,5 @@ module.exports = {
   postAnswer,
   editAnswer,
   deleteAnswer,
-  getanswer
+  getanswer,
 };
